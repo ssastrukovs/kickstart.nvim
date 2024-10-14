@@ -879,6 +879,21 @@ require('lazy').setup({
     end,
   },
 
+  -- SCROLLBAR, it's essential for error navigation
+  {
+    'petertriho/nvim-scrollbar',
+
+    config = function()
+      require('scrollbar').setup {
+        handle = {},
+        marks = {
+          GitChange = { color = 0xFF0000 },
+        },
+      }
+      require('scrollbar.handlers.gitsigns').setup() -- hunks
+    end,
+  },
+
   -- FOLDING END.
   --
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
