@@ -644,7 +644,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true, python = true, py = true }
+        local disable_filetypes = { c = true, cpp = true }
         local lsp_format_opt
         if disable_filetypes[vim.bo[bufnr].filetype] then
           lsp_format_opt = 'never'
@@ -942,14 +942,20 @@ require('lazy').setup({
       vim.keymap.set('i', '<C-g>', function()
         return vim.fn['codeium#Accept']()
       end, { expr = true, silent = true })
-      vim.keymap.set('i', '<c-;>', function()
+      vim.keymap.set('i', '<C-p>', function()
         return vim.fn['codeium#CycleCompletions'](1)
       end, { expr = true, silent = true })
-      vim.keymap.set('i', '<c-,>', function()
+      vim.keymap.set('i', '<C-o>', function()
         return vim.fn['codeium#CycleCompletions'](-1)
       end, { expr = true, silent = true })
-      vim.keymap.set('i', '<c-x>', function()
+      vim.keymap.set('i', '<C-x>', function()
         return vim.fn['codeium#Clear']()
+      end, { expr = true, silent = true })
+      vim.keymap.set('i', '<C-e>', function()
+        return vim.fn['codeium#AcceptNextWord']()
+      end, { expr = true, silent = true })
+      vim.keymap.set('i', '<C-k>', function()
+        return vim.fn['codeium#AcceptNextLine']()
       end, { expr = true, silent = true })
     end,
   },
