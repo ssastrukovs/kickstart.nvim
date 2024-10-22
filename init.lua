@@ -73,6 +73,7 @@ vim.opt.scrolloff = 10
 
 -- K&R offsets
 vim.opt.tabstop = 4
+vim.opt.colorcolumn = '80,120'
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
