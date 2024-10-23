@@ -6,6 +6,18 @@ return {
   {
     'lewis6991/gitsigns.nvim',
     opts = {
+      signs = {
+        add = { text = '+' },
+        change = { text = '~' },
+        delete = { text = '_' },
+        topdelete = { text = '‾' },
+        changedelete = { text = '~' },
+      },
+      diff_opts = {
+        ignore_whitespace_change = true,
+      },
+      current_line_blame = true,
+
       on_attach = function(bufnr)
         local gitsigns = require 'gitsigns'
 
@@ -55,9 +67,6 @@ return {
         -- Toggles
         map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = '[T]oggle git show [b]lame line' })
         map('n', '<leader>tD', gitsigns.toggle_deleted, { desc = '[T]oggle git show [D]eleted' })
-        -- Blame activate right away
-        vim.cmd 'Gitsigns toggle_current_line_blame'
-        require('gitsigns').setup()
       end,
     },
   },

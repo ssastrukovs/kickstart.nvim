@@ -169,21 +169,7 @@ require('lazy').setup({
   --    require('gitsigns').setup({ ... })
   --
   -- See `:help gitsigns` to understand what the configuration keys do
-  { -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-      diff_opts = {
-        ignore_whitespace_change = true,
-      },
-    },
-  },
+  -- Adds git related signs to the gutter, as well as utilities for managing changes
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
@@ -565,7 +551,7 @@ require('lazy').setup({
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
       -- various on_attaches
-      local on_attach = function(client, bufnr)
+      local on_attach = function(client, _)
         if client.name == 'ruff_lsp' then
           -- Disable hover in favor of Pyright
           client.server_capabilities.hoverProvider = false
