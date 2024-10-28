@@ -75,6 +75,9 @@ vim.opt.scrolloff = 10
 vim.opt.tabstop = 4
 vim.opt.colorcolumn = '80,120'
 
+vim.opt.langmap =
+  'ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯБЮЖЭХЪ;ABCDEFGHIJKLMNOPQRSTUVWXYZ<>:"{},фисвуапршолдьтщзйкыегмцчнябюж.эхъ;abcdefghijklmnopqrstuvwxyz\\,.;/\'[]'
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
