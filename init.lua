@@ -342,11 +342,11 @@ require('lazy').setup({
         defaults = {
           mappings = {
             n = {
-              ['<c-d>'] = require('telescope.actions').delete_buffer,
+              ['<c-o>'] = require('telescope.actions').delete_buffer,
             }, -- n
             i = {
               ['<C-h>'] = 'which_key',
-              ['<c-d>'] = require('telescope.actions').delete_buffer,
+              ['<c-o>'] = require('telescope.actions').delete_buffer,
             }, -- i
           },
         },
