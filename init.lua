@@ -13,7 +13,7 @@ vim.g.have_nerd_font = true
 --  For more options, you can see `:help option-list`
 
 -- Make line numbers default
-vim.opt.number = true
+-- vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 -- vim.opt.relativenumber = true
@@ -339,11 +339,17 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          mappings = {
+            n = {
+              ['<c-d>'] = require('telescope.actions').delete_buffer,
+            }, -- n
+            i = {
+              ['<C-h>'] = 'which_key',
+              ['<c-d>'] = require('telescope.actions').delete_buffer,
+            }, -- i
+          },
+        },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
@@ -408,6 +414,17 @@ require('lazy').setup({
         end,
       })
     end,
+  },
+
+  {
+    -- neogit
+    'TimUntersberger/neogit',
+    cmd = 'Neogit',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope.nvim',
+      'sindrets/diffview.nvim',
+    },
   },
 
   -- LSP Plugins
@@ -555,7 +572,7 @@ require('lazy').setup({
 
       -- various on_attaches
       local on_attach = function(client, _)
-        if client.name == 'ruff_lsp' then
+        if client.name == 'ruff' then
           -- Disable hover in favor of Pyright
           client.server_capabilities.hoverProvider = false
         end
@@ -590,7 +607,7 @@ require('lazy').setup({
             },
           },
         },
-        ruff_lsp = {
+        ruff = {
           on_attach = on_attach,
           init_options = {
             settings = {
@@ -645,7 +662,7 @@ require('lazy').setup({
       }
     end,
   },
-
+  { 'shortcuts/no-neck-pain.nvim', version = '*', opts = { width = 130 } },
   { -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
@@ -670,38 +687,38 @@ require('lazy').setup({
         -- Disable format_hunks() when in disable_filetypes
         local disable_filetypes_formathunks = { 'lua', 'icli', 'conf' }
         local function format_hunks()
-          local hunks = require('gitsigns').get_hunks()
-          if hunks == nil then
-            return
-          end
-
-          local format = require('conform').format
-
-          local function format_range()
-            if next(hunks) == nil then
-              vim.notify('done formatting git hunks', 'info', { title = 'formatting' })
-              return
-            end
-            local hunk = nil
-            while next(hunks) ~= nil and (hunk == nil or hunk.type == 'delete') do
-              hunk = table.remove(hunks)
-            end
-
-            if hunk ~= nil and hunk.type ~= 'delete' then
-              local start = hunk.added.start
-              local last = start + hunk.added.count
-              -- nvim_buf_get_lines uses zero-based indexing -> subtract from last
-              local last_hunk_line = vim.api.nvim_buf_get_lines(0, last - 2, last - 1, true)[1]
-              local range = { start = { start, 0 }, ['end'] = { last - 1, last_hunk_line:len() } }
-              format({ range = range, async = true, lsp_fallback = true }, function()
-                vim.defer_fn(function()
-                  format_range()
-                end, 1)
-              end)
-            end
-          end
-
-          format_range()
+          -- local hunks = require('gitsigns').get_hunks()
+          -- if hunks == nil then
+          --   return
+          -- end
+          --
+          -- local format = require('conform').format
+          --
+          -- local function format_range()
+          --   if next(hunks) == nil then
+          --     vim.notify('done formatting git hunks', 'info', { title = 'formatting' })
+          --     return
+          --   end
+          --   local hunk = nil
+          --   while next(hunks) ~= nil and (hunk == nil or hunk.type == 'delete') do
+          --     hunk = table.remove(hunks)
+          --   end
+          --
+          --   if hunk ~= nil and hunk.type ~= 'delete' then
+          --     local start = hunk.added.start
+          --     local last = start + hunk.added.count
+          --     -- nvim_buf_get_lines uses zero-based indexing -> subtract from last
+          --     local last_hunk_line = vim.api.nvim_buf_get_lines(0, last - 2, last - 1, true)[1]
+          --     local range = { start = { start, 0 }, ['end'] = { last - 1, last_hunk_line:len() } }
+          --     format({ range = range, async = true, lsp_fallback = true }, function()
+          --       vim.defer_fn(function()
+          --         format_range()
+          --       end, 1)
+          --     end)
+          --   end
+          -- end
+          --
+          -- format_range()
         end
         local lsp_format_opt
         if disable_filetypes[vim.bo[bufnr].filetype] then
@@ -980,7 +997,7 @@ require('lazy').setup({
   -- SCROLLBAR, it's essential for error navigation
   {
     'petertriho/nvim-scrollbar',
-
+    dependencies = { 'kevinhwang91/nvim-hlslens' },
     config = function()
       require('scrollbar').setup {
         handle = {},
@@ -989,6 +1006,9 @@ require('lazy').setup({
         },
       }
       require('scrollbar.handlers.gitsigns').setup() -- hunks
+      require('scrollbar.handlers.search').setup {
+        -- hlslens config overrides
+      }
     end,
   },
 
