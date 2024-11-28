@@ -75,9 +75,6 @@ vim.opt.scrolloff = 10
 vim.opt.tabstop = 4
 vim.opt.colorcolumn = '80,120'
 
-vim.opt.langmap =
-  'ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯБЮЖЭХЪ;ABCDEFGHIJKLMNOPQRSTUVWXYZ<>:"{},фисвуапршолдьтщзйкыегмцчнябюж.эхъ;abcdefghijklmnopqrstuvwxyz\\,.;/\'[]'
-
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -416,14 +413,73 @@ require('lazy').setup({
     end,
   },
 
+  --diffview
+  {
+    'sindrets/diffview.nvim',
+    -- cmd = 'DiffviewOpen',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      require('diffview').setup {
+        disable_diagnostics = true,
+      }
+    end,
+  },
+
+  {
+    'rbong/vim-flog',
+    lazy = true,
+    cmd = { 'Flog', 'Flogsplit', 'Floggit' },
+    dependencies = {
+      'tpope/vim-fugitive',
+    },
+  },
+
   {
     -- neogit
-    'TimUntersberger/neogit',
-    cmd = 'Neogit',
+    'NeoGitOrg/neogit',
+    -- old commit
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-telescope/telescope.nvim',
       'sindrets/diffview.nvim',
+    },
+    config = function()
+      local neogit = require 'neogit'
+      neogit.setup {
+        telescope_sorter = function()
+          return require('telescope').extensions.fzf.native_fzf_sorter()
+        end,
+        integrations = {
+          telescope = true,
+          diffview = true,
+        },
+        graph_style = 'ascii',
+        popup = {
+          kind = 'floating',
+        },
+      }
+    end,
+  },
+
+  {
+    'kdheepak/lazygit.nvim',
+    lazy = true,
+    cmd = {
+      'LazyGit',
+      'LazyGitConfig',
+      'LazyGitCurrentFile',
+      'LazyGitFilter',
+      'LazyGitFilterCurrentFile',
+    },
+    -- optional for floating window border decoration
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+      { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'Lazy[G]it' },
+      { '<leader>lc', '<cmd>LazyGitCurrentFile<cr>', desc = 'LazyGit[C]urrentFile' },
     },
   },
 
@@ -676,6 +732,48 @@ require('lazy').setup({
         mode = '',
         desc = '[F]ormat buffer',
       },
+      {
+        -- vscode "editor.formatOnSaveMode": "modificationsIfAvailable"
+        '<leader>hF',
+        function()
+          -- local filetype = vim.bo[vim.api.nvim_get_current_buf()].filetype
+          -- vim.notify('filetype = ' .. filetype, 'info', { title = 'formatting' })
+          local hunks = require('gitsigns').get_hunks()
+          if hunks == nil then
+            return
+          end
+
+          local format = require('conform').format
+
+          local function format_range()
+            if next(hunks) == nil then
+              vim.notify('done formatting git hunks', 'info', { title = 'formatting' })
+              return
+            end
+            local hunk = nil
+            while next(hunks) ~= nil and (hunk == nil or hunk.type == 'delete') do
+              hunk = table.remove(hunks)
+            end
+
+            if hunk ~= nil and hunk.type ~= 'delete' then
+              local start = hunk.added.start
+              local last = start + hunk.added.count
+              -- nvim_buf_get_lines uses zero-based indexing -> subtract from last
+              local last_hunk_line = vim.api.nvim_buf_get_lines(0, last - 2, last - 1, true)[1]
+              local range = { start = { start, 0 }, ['end'] = { last - 1, last_hunk_line:len() } }
+              format({ range = range, async = false, lsp_fallback = true }, function()
+                vim.defer_fn(function()
+                  format_range()
+                end, 1)
+              end)
+            end
+          end
+
+          format_range()
+        end,
+        mode = 'n',
+        desc = '[H]unks [F]ormat',
+      },
     },
     opts = {
       notify_on_error = false,
@@ -684,49 +782,8 @@ require('lazy').setup({
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
         local disable_filetypes = { c = true, cpp = true, conf = true, icli = true }
-        -- Disable format_hunks() when in disable_filetypes
-        local disable_filetypes_formathunks = { 'lua', 'icli', 'conf' }
-        local function format_hunks()
-          -- local hunks = require('gitsigns').get_hunks()
-          -- if hunks == nil then
-          --   return
-          -- end
-          --
-          -- local format = require('conform').format
-          --
-          -- local function format_range()
-          --   if next(hunks) == nil then
-          --     vim.notify('done formatting git hunks', 'info', { title = 'formatting' })
-          --     return
-          --   end
-          --   local hunk = nil
-          --   while next(hunks) ~= nil and (hunk == nil or hunk.type == 'delete') do
-          --     hunk = table.remove(hunks)
-          --   end
-          --
-          --   if hunk ~= nil and hunk.type ~= 'delete' then
-          --     local start = hunk.added.start
-          --     local last = start + hunk.added.count
-          --     -- nvim_buf_get_lines uses zero-based indexing -> subtract from last
-          --     local last_hunk_line = vim.api.nvim_buf_get_lines(0, last - 2, last - 1, true)[1]
-          --     local range = { start = { start, 0 }, ['end'] = { last - 1, last_hunk_line:len() } }
-          --     format({ range = range, async = true, lsp_fallback = true }, function()
-          --       vim.defer_fn(function()
-          --         format_range()
-          --       end, 1)
-          --     end)
-          --   end
-          -- end
-          --
-          -- format_range()
-        end
         local lsp_format_opt
         if disable_filetypes[vim.bo[bufnr].filetype] then
-          -- format only changed in disabled, a.k.a.
-          -- vscode "editor.formatOnSaveMode": "modificationsIfAvailable"
-          if not disable_filetypes_formathunks[vim.bo[bufnr].filetype] then
-            format_hunks()
-          end
           lsp_format_opt = 'never'
         else
           lsp_format_opt = 'fallback'
@@ -960,6 +1017,7 @@ require('lazy').setup({
   -- FOLDING!!! NEEDED!!! Start.
   {
     'kevinhwang91/nvim-ufo',
+    commit = 'v1.4.0', -- get stable, nightly conflicts with neogit
     dependencies = {
       'kevinhwang91/promise-async',
     },
@@ -1100,6 +1158,8 @@ require('lazy').setup({
     },
   },
 })
+
+vim.g.lazygit_floating_window_scaling_factor = 0.96 -- scaling factor for floating window
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
