@@ -346,6 +346,19 @@ require('lazy').setup({
               ['<c-o>'] = require('telescope.actions').delete_buffer,
             }, -- i
           },
+          path_display = function(_, path)
+            local tail = require('telescope.utils').path_tail(path)
+            return string.format('%s (%s)', tail, path), { { { 1, #tail }, 'Constant' } }
+          end,
+          layout_strategy = 'vertical',
+          layout_config = {
+            vertical = {
+              height = 0.999,
+              preview_cutoff = 40,
+              prompt_position = 'bottom',
+              width = 0.8,
+            },
+          },
         },
         -- pickers = {}
         extensions = {
@@ -412,17 +425,65 @@ require('lazy').setup({
       })
     end,
   },
+  --kitty-like scrolls and smooth C-u and C-d
+  -- {
+  --   'karb94/neoscroll.nvim',
+  --   opts = {
+  --     duration_multiplier = 0.35, -- make it fast
+  --     -- Enable this if you have a beefy PC. It's to work with nvim-scrollbar,
+  --     -- sacrificing performance
+  --     -- ignored_events = {},
+  --
+  --     -- By hiding the scrollbar we don't sacrifice performance
+  --     pre_hook = function()
+  --       local scrollbar_util = require 'scrollbar.utils'
+  --       scrollbar_util.hide()
+  --     end,
+  --     post_hook = function()
+  --       local scrollbar_util = require 'scrollbar.utils'
+  --       scrollbar_util.show()
+  --     end,
+  --   },
+  -- },
+  {
+    'sphamba/smear-cursor.nvim',
+    opts = {
+      -- carbonfox. Maybe get it from terminal config?
+      cursor_color = '#b6b8bb',
+      -- Smear cursor when switching buffers or windows.
+      smear_between_buffers = true,
+
+      -- Smear cursor when moving within line or to neighbor lines.
+      smear_between_neighbor_lines = true,
+
+      -- Set to `true` if your font supports legacy computing symbols (block unicode symbols).
+      -- Smears will blend better on all backgrounds.
+      -- legacy_computing_symbols_support = true,
+
+      -- quick opts
+      stiffness = 0.8, -- 0.6      [0, 1]
+      trailing_stiffness = 0.5, -- 0.3      [0, 1]
+      distance_stop_animating = 0.5, -- 0.1      > 0
+      hide_target_hack = false, -- true     boolean
+
+      -- FIRE OPTS
+      -- stiffness = 0.3,
+      -- trailing_stiffness = 0.1,
+      -- trailing_exponent = 3,
+      -- gamma = 1,
+      -- volume_reduction_exponent = -0.1,
+    },
+  },
 
   --diffview
   {
     'sindrets/diffview.nvim',
     -- cmd = 'DiffviewOpen',
     dependencies = { 'nvim-lua/plenary.nvim' },
-    config = function()
-      require('diffview').setup {
-        disable_diagnostics = true,
-      }
-    end,
+    opts = {
+      disable_diagnostics = true,
+      trail = false,
+    },
   },
 
   {
@@ -453,7 +514,8 @@ require('lazy').setup({
           telescope = true,
           diffview = true,
         },
-        graph_style = 'ascii',
+        -- Maybe get this depending on terminal type?
+        graph_style = 'kitty',
         popup = {
           kind = 'floating',
         },
@@ -644,14 +706,6 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        clangd = {
-          on_attach = function(client, bufnr)
-            client.server_capabilities.signatureHelpProvider = false
-            on_attach(client, bufnr)
-          end,
-          capabilities = capabilities,
-          filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'h', 'hpp', 'cxx', 'hxx', 'cc' },
-        },
         basedpyright = {
           settings = {
             -- Using Ruff's import organizer
@@ -714,6 +768,25 @@ require('lazy').setup({
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
           end,
+        },
+      }
+      require('lspconfig').clangd.setup {
+        on_attach = function(client, bufnr)
+          client.server_capabilities.signatureHelpProvider = false
+          on_attach(client, bufnr)
+        end,
+        capabilities = capabilities,
+        cmd = {
+          '/usr/bin/clangd',
+          '--background-index',
+          '--clang-tidy',
+          '--header-insertion=never',
+          '--completion-style=detailed',
+          '--function-arg-placeholders',
+          '--fallback-style=llvm',
+        },
+        settings = {
+          arguments = '--background-index --clang-tidy --header-insertion=never --completion-style=detailed --function-arg-placeholders --fallback-style=llvm',
         },
       }
     end,
@@ -1008,10 +1081,16 @@ require('lazy').setup({
     ---enables autocomplete for opts
     ---@module "auto-session"
     ---@type AutoSession.Config
-    opts = {
-      suppressed_dirs = { '~/', '~/Projects', '~/Downloads', '/' },
-      -- log_level = 'debug',
-    },
+    opts = {},
+    config = function()
+      -- vim.o.sessionoptions="blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions" is recommended
+      -- Note that we omit folds, it kinda conflicts with nvim-ufo
+      vim.o.sessionoptions = 'blank,buffers,curdir,help,tabpages,winsize,winpos,terminal,localoptions'
+
+      require('auto-session').setup {
+        suppressed_dirs = { '~/', '~/Projects', '~/Downloads', '/' },
+      }
+    end,
   },
 
   -- FOLDING!!! NEEDED!!! Start.

@@ -14,10 +14,10 @@ return {
         changedelete = { text = '~' },
       },
       diff_opts = {
-        ignore_whitespace_change = true,
+        ignore_whitespace_change = false,
       },
       current_line_blame = true,
-      current_line_blame_opts = { delay = 100 },
+      current_line_blame_opts = { delay = 500 },
 
       on_attach = function(bufnr)
         local gitsigns = require 'gitsigns'
