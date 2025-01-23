@@ -14,7 +14,7 @@ return {
         changedelete = { text = '~' },
       },
       diff_opts = {
-        ignore_whitespace_change = false,
+        ignore_whitespace_change = true,
       },
       current_line_blame = true,
       current_line_blame_opts = { delay = 500 },

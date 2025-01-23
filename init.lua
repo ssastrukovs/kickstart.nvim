@@ -186,6 +186,14 @@ require('lazy').setup({
   -- after the plugin has been loaded:
   --  config = function() ... end
 
+  {
+    'ibhagwan/fzf-lua',
+    -- optional for icon support
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    -- or if using mini.icons/mini.nvim
+    -- dependencies = { "echasnovski/mini.icons" },
+    opts = {},
+  },
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
@@ -993,18 +1001,42 @@ require('lazy').setup({
     end,
   },
 
+  -- {
+  --   'EdenEast/nightfox.nvim',
+  --   priority = 1000, -- Make sure to load this before all the other start plugins.
+  --   init = function()
+  --     -- Load the colorscheme here.
+  --     -- Like many other themes, this one has different styles, and you could load
+  --     -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+  --     vim.cmd.colorscheme 'carbonfox'
+  --
+  --     -- You can configure highlights by doing something like:
+  --     vim.cmd.hi 'Comment gui=none'
+  --   end,
+  -- },
+
   {
-    'EdenEast/nightfox.nvim',
+    'folke/tokyonight.nvim',
+    lazy = false,
     priority = 1000, -- Make sure to load this before all the other start plugins.
+    opts = { transparent = true },
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'carbonfox'
+      vim.cmd.colorscheme 'tokyonight-night'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,
+  }, -- Lua
+  {
+    'folke/zen-mode.nvim',
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
   },
 
   -- Highlight todo, notes, etc in comments
@@ -1096,7 +1128,7 @@ require('lazy').setup({
   -- FOLDING!!! NEEDED!!! Start.
   {
     'kevinhwang91/nvim-ufo',
-    commit = 'v1.4.0', -- get stable, nightly conflicts with neogit
+    -- commit = 'v1.4.0', -- get stable, nightly conflicts with neogit
     dependencies = {
       'kevinhwang91/promise-async',
     },
