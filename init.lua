@@ -528,6 +528,11 @@ require('lazy').setup({
           kind = 'floating',
         },
       }
+      vim.api.nvim_create_user_command('NeogitListFilesTree', function()
+        local neogit_files = require 'neogit.lib.git.files'
+        local files = neogit_files.all_tree { with_dir = true }
+        print(vim.inspect(files))
+      end, { nargs = 0 })
     end,
   },
 
@@ -1186,29 +1191,44 @@ require('lazy').setup({
 
   -- FOLDING END.
 
+  -- {
+  --   'Exafunction/codeium.vim',
+  --   config = function()
+  --     -- Change '<C-g>' here to any keycode you like.
+  --     vim.keymap.set('i', '<C-g>', function()
+  --       return vim.fn['codeium#Accept']()
+  --     end, { expr = true, silent = true })
+  --     vim.keymap.set('i', '<C-p>', function()
+  --       return vim.fn['codeium#CycleCompletions'](1)
+  --     end, { expr = true, silent = true })
+  --     vim.keymap.set('i', '<C-o>', function()
+  --       return vim.fn['codeium#CycleCompletions'](-1)
+  --     end, { expr = true, silent = true })
+  --     vim.keymap.set('i', '<C-x>', function()
+  --       return vim.fn['codeium#Clear']()
+  --     end, { expr = true, silent = true })
+  --     vim.keymap.set('i', '<C-e>', function()
+  --       return vim.fn['codeium#AcceptNextWord']()
+  --     end, { expr = true, silent = true })
+  --     vim.keymap.set('i', '<C-k>', function()
+  --       return vim.fn['codeium#AcceptNextLine']()
+  --     end, { expr = true, silent = true })
+  --   end,
+  -- },
   {
-    'Exafunction/codeium.vim',
-    config = function()
-      -- Change '<C-g>' here to any keycode you like.
-      vim.keymap.set('i', '<C-g>', function()
-        return vim.fn['codeium#Accept']()
-      end, { expr = true, silent = true })
-      vim.keymap.set('i', '<C-p>', function()
-        return vim.fn['codeium#CycleCompletions'](1)
-      end, { expr = true, silent = true })
-      vim.keymap.set('i', '<C-o>', function()
-        return vim.fn['codeium#CycleCompletions'](-1)
-      end, { expr = true, silent = true })
-      vim.keymap.set('i', '<C-x>', function()
-        return vim.fn['codeium#Clear']()
-      end, { expr = true, silent = true })
-      vim.keymap.set('i', '<C-e>', function()
-        return vim.fn['codeium#AcceptNextWord']()
-      end, { expr = true, silent = true })
-      vim.keymap.set('i', '<C-k>', function()
-        return vim.fn['codeium#AcceptNextLine']()
-      end, { expr = true, silent = true })
-    end,
+    'github/copilot.vim',
+  },
+  {
+    'CopilotC-Nvim/CopilotChat.nvim',
+    dependencies = {
+      { 'github/copilot.vim' }, -- or zbirenbaum/copilot.lua
+      { 'nvim-lua/plenary.nvim', branch = 'master' }, -- for curl, log and async functions
+    },
+    build = 'make tiktoken', -- Only on MacOS or Linux
+    opts = {
+      -- See Configuration section for options
+    },
+    -- See Commands section for default commands if you want to lazy load on them
   },
   -- for tmux
   {
