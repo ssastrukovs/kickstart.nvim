@@ -572,7 +572,9 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for Neovim
-      { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
+      -- Mason must be loaded before its dependents so we need to set it up here.
+      -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
+      { 'williamboman/mason.nvim', opts = { path = 'append' } },
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
@@ -725,6 +727,13 @@ require('lazy').setup({
             },
           },
         },
+        clangd = {
+          on_attach = function(client, bufnr)
+            client.server_capabilities.signatureHelpProvider = false
+            on_attach(client, bufnr)
+          end,
+          capabilities = capabilities,
+        },
         ruff = {
           on_attach = on_attach,
           init_options = {
@@ -756,7 +765,10 @@ require('lazy').setup({
       --    :Mason
       --
       --  You can press `g?` for help in this menu.
-      require('mason').setup()
+      --
+      -- `mason` had to be setup earlier: to configure its options see the
+      -- `dependencies` table for `nvim-lspconfig` above.
+      --
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
@@ -777,26 +789,17 @@ require('lazy').setup({
             require('lspconfig')[server_name].setup(server)
           end,
         },
+        -- provide to "ensure_installed" only an array with names
+        ensure_installed = vim.tbl_keys(servers or {}),
+        automatic_installation = true,
       }
-      require('lspconfig').clangd.setup {
-        on_attach = function(client, bufnr)
-          client.server_capabilities.signatureHelpProvider = false
-          on_attach(client, bufnr)
-        end,
-        capabilities = capabilities,
-        cmd = {
-          '/usr/bin/clangd',
-          '--background-index',
-          '--clang-tidy',
-          '--header-insertion=never',
-          '--completion-style=detailed',
-          '--function-arg-placeholders',
-          '--fallback-style=llvm',
-        },
-        settings = {
-          arguments = '--background-index --clang-tidy --header-insertion=never --completion-style=detailed --function-arg-placeholders --fallback-style=llvm',
-        },
-      }
+      -- Mason cmd is not working, we have to add a hook before to override it properly
+      local lspconfig = require 'lspconfig'
+      lspconfig.util.on_setup = lspconfig.util.add_hook_before(lspconfig.util.on_setup, function(config)
+        if config.name == 'clangd' then
+          config.cmd = { vim.fn.expand '~/.local/share/nvim/mason/bin/clangd', '--header-insertion=never' }
+        end
+      end)
     end,
   },
   { 'shortcuts/no-neck-pain.nvim', version = '*', opts = { width = 130 } },
