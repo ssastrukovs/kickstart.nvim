@@ -1032,7 +1032,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'tokyonight-storm'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -1191,45 +1191,45 @@ require('lazy').setup({
 
   -- FOLDING END.
 
+  {
+    'Exafunction/codeium.vim',
+    config = function()
+      -- Change '<C-g>' here to any keycode you like.
+      vim.keymap.set('i', '<C-g>', function()
+        return vim.fn['codeium#Accept']()
+      end, { expr = true, silent = true })
+      vim.keymap.set('i', '<C-p>', function()
+        return vim.fn['codeium#CycleCompletions'](1)
+      end, { expr = true, silent = true })
+      vim.keymap.set('i', '<C-o>', function()
+        return vim.fn['codeium#CycleCompletions'](-1)
+      end, { expr = true, silent = true })
+      vim.keymap.set('i', '<C-x>', function()
+        return vim.fn['codeium#Clear']()
+      end, { expr = true, silent = true })
+      vim.keymap.set('i', '<C-e>', function()
+        return vim.fn['codeium#AcceptNextWord']()
+      end, { expr = true, silent = true })
+      vim.keymap.set('i', '<C-k>', function()
+        return vim.fn['codeium#AcceptNextLine']()
+      end, { expr = true, silent = true })
+    end,
+  },
   -- {
-  --   'Exafunction/codeium.vim',
-  --   config = function()
-  --     -- Change '<C-g>' here to any keycode you like.
-  --     vim.keymap.set('i', '<C-g>', function()
-  --       return vim.fn['codeium#Accept']()
-  --     end, { expr = true, silent = true })
-  --     vim.keymap.set('i', '<C-p>', function()
-  --       return vim.fn['codeium#CycleCompletions'](1)
-  --     end, { expr = true, silent = true })
-  --     vim.keymap.set('i', '<C-o>', function()
-  --       return vim.fn['codeium#CycleCompletions'](-1)
-  --     end, { expr = true, silent = true })
-  --     vim.keymap.set('i', '<C-x>', function()
-  --       return vim.fn['codeium#Clear']()
-  --     end, { expr = true, silent = true })
-  --     vim.keymap.set('i', '<C-e>', function()
-  --       return vim.fn['codeium#AcceptNextWord']()
-  --     end, { expr = true, silent = true })
-  --     vim.keymap.set('i', '<C-k>', function()
-  --       return vim.fn['codeium#AcceptNextLine']()
-  --     end, { expr = true, silent = true })
-  --   end,
+  --   'github/copilot.vim',
   -- },
-  {
-    'github/copilot.vim',
-  },
-  {
-    'CopilotC-Nvim/CopilotChat.nvim',
-    dependencies = {
-      { 'github/copilot.vim' }, -- or zbirenbaum/copilot.lua
-      { 'nvim-lua/plenary.nvim', branch = 'master' }, -- for curl, log and async functions
-    },
-    build = 'make tiktoken', -- Only on MacOS or Linux
-    opts = {
-      -- See Configuration section for options
-    },
-    -- See Commands section for default commands if you want to lazy load on them
-  },
+  -- {
+  --   'CopilotC-Nvim/CopilotChat.nvim',
+  --   dependencies = {
+  --     { 'github/copilot.vim' }, -- or zbirenbaum/copilot.lua
+  --     { 'nvim-lua/plenary.nvim', branch = 'master' }, -- for curl, log and async functions
+  --   },
+  --   build = 'make tiktoken', -- Only on MacOS or Linux
+  --   opts = {
+  --     -- See Configuration section for options
+  --   },
+  --   -- See Commands section for default commands if you want to lazy load on them
+  -- },
   -- for tmux
   {
     'christoomey/vim-tmux-navigator',
