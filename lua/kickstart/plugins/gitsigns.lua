@@ -77,7 +77,7 @@ return {
     'rhysd/git-messenger.vim',
     keys = { '<leader>gm', '<cmd>GitMessenger<cr>', desc = 'git [b]lame line (GitMessenger)' },
     init = function()
-      vim.g.git_messenger_include_diff = 'current'
+      -- vim.g.git_messenger_include_diff = 'current'
     end,
   },
 }

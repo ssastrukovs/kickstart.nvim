@@ -738,7 +738,10 @@ require('lazy').setup({
             on_attach(client, bufnr)
           end,
           capabilities = capabilities,
+          filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'h', 'hpp', 'cxx', 'hxx', 'cc', 'conf' },
         },
+        -- devicetree
+        ginko_ls = {},
         ruff = {
           on_attach = on_attach,
           init_options = {
