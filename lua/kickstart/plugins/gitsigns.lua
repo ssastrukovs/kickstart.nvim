@@ -17,7 +17,8 @@ return {
         ignore_whitespace_change = true,
       },
       current_line_blame = true,
-      current_line_blame_opts = { delay = 500 },
+      -- ignore whitespace changes in inline blame too
+      current_line_blame_opts = { delay = 500, ignore_whitespace = true },
 
       on_attach = function(bufnr)
         local gitsigns = require 'gitsigns'
