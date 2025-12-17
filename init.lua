@@ -155,7 +155,7 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -595,17 +595,17 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        basedpyright = {
-          settings = {
-            -- Using Ruff's import organizer
-            disableOrganizeImports = true,
-            basedpyright = {
-              analysis = {
-                ignore = { '*' }, -- use Ruff
-              },
-            },
-          },
-        },
+        -- basedpyright = {
+        --   settings = {
+        --     -- Using Ruff's import organizer
+        --     disableOrganizeImports = true,
+        --     basedpyright = {
+        --       analysis = {
+        --         ignore = { '*' }, -- use Ruff
+        --       },
+        --     },
+        --   },
+        -- },
         clangd = {
           on_attach = function(client, bufnr)
             client.server_capabilities.signatureHelpProvider = false
@@ -616,14 +616,14 @@ require('lazy').setup({
         },
         -- devicetree
         ginko_ls = {},
-        ruff = {
-          on_attach = on_attach,
-          init_options = {
-            settings = {
-              args = {},
-            },
-          },
-        },
+        -- ruff = {
+        --   on_attach = on_attach,
+        --   init_options = {
+        --     settings = {
+        --       args = {},
+        --     },
+        --   },
+        -- },
 
         lua_ls = {
           -- cmd = {...},
