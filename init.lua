@@ -528,6 +528,12 @@ require('lazy').setup({
           -- Restart LSP
           map('<leader>cr', '<cmd>LspRestart<cr>', '[C]ode (LSP) [R]estart')
 
+          -- Zen mode simple
+          map('<leader>cz', '<cmd>NoNeckPain<cr>', '[C]ode [Z]en mode simple (NoNeckPain)')
+
+          -- Zen mode fancy
+          map('<leader>cZ', '<cmd>ZenMode<cr>', '[C]ode [Z]en mode fancy (ZenMode)')
+
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
           map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
