@@ -34,7 +34,7 @@ return {
           if vim.wo.diff then
             vim.cmd.normal { ']c', bang = true }
           else
-            gitsigns.nav_hunk 'next'
+            gitsigns.nav_hunk('next', { target = 'all' })
           end
         end, { desc = 'Jump to next git [c]hange' })
 
